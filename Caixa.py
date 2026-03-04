@@ -21,8 +21,19 @@ class Cliente:
         self.token_id = uuid.uuid4()
         print(f"Cliente {self.nome} criado com sucesso!")
         print(f"Token ID: {self.token_id}")
+
+class Produto:
+    def __init__(self, nome, preco, codigo):
+        self.nome = nome
+        self.preco = preco
+        self.codigo = codigo
         
-    
+        
+p1 = Produto('Toddy', 8.50, '001')
+print(p1.nome)
+print(p1.preco)
+print(p1.codigo)
+
 meucaixa = meu_caixa = Saldo(100.0)
 meu_caixa.receber(50.50)
 meu_caixa.pagar(20)
