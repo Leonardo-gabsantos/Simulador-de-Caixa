@@ -1,69 +1,50 @@
-import uuid
+class Caixa:
+    def __init__(self, saldo_inicial):
+        
+        self.saldo = saldo_inicial
 
-print('--- Simulador de Caixa de Supermercado ---')
-
-class Saldo:
-    def __init__(self, valor_inicial):
-        self.valor = valor_inicial
-        print(f"Saldo inicial do caixa: R$ {self.valor:.2f}")
-
-    def receber(self, quantia):
-        self.valor += quantia
-        print(f"Recebido: R$ {quantia:.2f} | Saldo em Caixa: R$ {self.valor:.2f}")
-
-    def pagar(self, qtd):
-        if qtd <= self.valor:
-            self.valor -= qtd
-            print(f"Pagamento realizado: R$ {qtd:.2f} | Saldo em Caixa: R$ {self.valor:.2f}")
+    def processar_pagamento(self, total):
+        """
+        Gerencia a escolha da forma de pagamento e atualiza o saldo do caixa.
+        Retorna True se o pagamento foi bem-sucedido e False se houve erro.
+        """
+        print(f"\n--- PAGAMENTO ---")
+        print(f"VALOR TOTAL DA COMPRA: R$ {total:.2f}")
+        print("1. Dinheiro")
+        print("2. Cartão (Crédito/Débito)")
+        
+        opcao = input("Escolha a forma de pagamento: ")
+        
+        if opcao == '1':
+            return self._pagamento_dinheiro(total)
+        elif opcao == '2':
+            return self._pagamento_cartao(total)
         else:
-            print(f"Erro: Saldo insuficiente para pagar R$ {qtd:.2f}")
+            print("[!] Opção de pagamento inválida.")
+            return False
 
-class Cliente:
-    def __init__(self, nome):
-        self.nome = nome
-        self.token_id = uuid.uuid4()
-        print(f"Cliente {self.nome} registrado. (ID: {str(self.token_id)[:8]}...)")
+    def _pagamento_dinheiro(self, total):
+        """Lógica interna para receber dinheiro e dar troco."""
+        try:
+            valor_entregue = float(input("Valor entregue pelo cliente: R$ "))
+            
+            if valor_entregue >= total:
+                troco = valor_entregue - total
+                self.saldo += total
+                if troco > 0:
+                    print(f"Troco a devolver: R$ {troco:.2f}")
+                return True
+            else:
+                print(f"[!] Erro: Valor insuficiente. Faltam R$ {total - valor_entregue:.2f}")
+                return False
+        except ValueError:
+            print("[!] Erro: Por favor, digite um valor numérico válido.")
+            return False
 
-class Produto:
-    def __init__(self, nome, preco, codigo):
-        self.nome = nome
-        self.preco = preco
-        self.codigo = codigo
-
-class Carrinho:
-    def __init__(self, cliente):
-        self.cliente = cliente
-        self.itens = []
-        self.total_compra = 0
-
-    def adicionar_produto(self, produto):
-        self.itens.append(produto)
-        self.total_compra += produto.preco
-        print(f"Item: {produto.nome} (R$ {produto.preco:.2f}) adicionado ao carrinho de {self.cliente.nome}")
-
-    def finalizar(self, caixa):
-        print(f"\n--- Finalizando compra de {self.cliente.nome} ---")
-        print(f"Total a pagar: R$ {self.total_compra:.2f}")
-        caixa.receber(self.total_compra)
-        self.itens = [] 
-        print("------------------------------------------\n")
-
-meu_caixa = Saldo(100.0)
-
-
-p1 = Produto('Toddy', 8.50, '001')
-p2 = Produto('Leite', 4.20, '002')
-p3 = Produto('Pão', 12.00, '003')
-
-
-cliente_leonardo = Cliente("Leonardo")
-carrinho_leo = Carrinho(cliente_leonardo)
-
-
-carrinho_leo.adicionar_produto(p1)
-carrinho_leo.adicionar_produto(p2)
-carrinho_leo.adicionar_produto(p3)
-
-
-carrinho_leo.finalizar(meu_caixa)
-
+    def _pagamento_cartao(self, total):
+        """Simula a comunicação com a maquininha de cartão."""
+        print("Processando cartão...")
+        
+        self.saldo += total
+        print("Pagamento AUTORIZADO!")
+        return True
